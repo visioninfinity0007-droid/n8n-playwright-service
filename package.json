@@ -1,0 +1,13 @@
+{
+  "name": "n8n-playwright-service",
+  "version": "1.0.0",
+  "description": "Playwright browser automation service for n8n",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "playwright": "^1.49.1"
+  }
+}
