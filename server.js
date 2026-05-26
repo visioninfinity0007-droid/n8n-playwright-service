@@ -4,14 +4,37 @@ const { chromium } = require('playwright');
 const app = express();
 app.use(express.json({ limit: '10mb' }));
 
+function requireApiKey(req, res, next) {
+  const configuredKey = process.env.API_KEY;
+
+  if (!configuredKey) {
+    return res.status(500).json({
+      success: false,
+      error: 'API_KEY environment variable is not configured'
+    });
+  }
+
+  const providedKey = req.header('x-api-key');
+
+  if (providedKey !== configuredKey) {
+    return res.status(401).json({
+      success: false,
+      error: 'Unauthorized'
+    });
+  }
+
+  next();
+}
+
 app.get('/', (req, res) => {
   res.json({
     status: 'ok',
-    service: 'n8n-playwright-service'
+    service: 'n8n-playwright-service',
+    protectedEndpoints: ['POST /run']
   });
 });
 
-app.post('/run', async (req, res) => {
+app.post('/run', requireApiKey, async (req, res) => {
   const { url } = req.body;
 
   if (!url) {
